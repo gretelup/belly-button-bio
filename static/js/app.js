@@ -1,12 +1,34 @@
 function buildMetadata(sample) {
 
-  // @TODO: Complete the following function that builds the metadata panel
+  /**
+  /* Builds panel to display metadata given the name of a sample.
+  /* @param {string}    sample    Name of the sample
+  */
+
+  
+
+ // Display each key/value pair from the metadata JSON object somewhere on the page
+  
+  //construct url for path to metadata for selected sample
+  var url = `/metadata/${sample}`;
 
   // Use `d3.json` to fetch the metadata for a sample
-    // Use d3 to select the panel with id of `#sample-metadata`
+  d3.json(url).then(function(response){  // This returns a jsonified list of sample metadata
+    console.log(response); //delete after testing
 
-    // Use `.html("") to clear any existing metadata
+    // GRETEL - CHECK SYNTAX!
+    // Clear existing metadata
+    d3.select("#sample-metadata").html("") 
 
+    // GRETEL - CHECK HTML FOR WHAT TO APPEND
+    // for each key-value pair, append p
+    Object.entries(response).forEach(([key, value]) => {
+      var p = d3.select("#sample-buildMetadata").append("p");
+      p.text(`${key}: ${value}`);
+      //I think this append should be <p class="card-text">, not sure how t do
+    })
+  })
+ 
     // Use `Object.entries` to add each key and value pair to the panel
     // Hint: Inside the loop, you will need to use d3 to append new
     // tags for each key-value in the metadata.
