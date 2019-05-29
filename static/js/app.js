@@ -98,8 +98,8 @@ function buildCharts(sample) {
     };
     var data2 = [trace2];
     var layout2 = {
-      height: 600,
-      width: 600
+      height: 450,
+      width: 450
     };
     // Clear existing chart
     d3.select("#pie").node().value = "";
