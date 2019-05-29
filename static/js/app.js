@@ -56,7 +56,10 @@ function buildCharts(sample) {
     otuData.sort((a, b) => b.sample_value-a.sample_value);
     otuData = otuData.slice(0,10);
 
-    // Build plot variables
+    console.log(otuData);
+
+    // BUILD BUBBLE PLOT
+    // Build bubble plot variables
     var trace1 = {
       x: otuData.map(d => d.otu_id),
       y: otuData.map(d => d.sample_value),
@@ -67,10 +70,8 @@ function buildCharts(sample) {
         size: otuData.map(d => d.sample_value)
       }
     };
-    
-    var data = [trace1];
-    
-    var layout = {
+    var data1 = [trace1];
+    var layout1 = {
       xaxis: {
         title: {
           text: "OTU ID"
@@ -85,9 +86,26 @@ function buildCharts(sample) {
     d3.select("#bubble").node().value = "";
     
     // Generate bubble plot
-    Plotly.newPlot("bubble", data, layout);
+    Plotly.newPlot("bubble", data1, layout1);
 
-    // // @TODO: Build a Pie Chart
+    // BUILD PIE CHART
+    // Build pie chart variables
+    var trace2 = {
+      labels: otuData.map(d => d.otu_id),
+      values: otuData.map(d => d.sample_value),
+      hovertext: otuData.map(d => d.otu_label),
+      type: "pie"
+    };
+    var data2 = [trace2];
+    var layout2 = {
+      height: 600,
+      width: 600
+    };
+    // Clear existing chart
+    d3.select("#pie").node().value = "";
+    
+    // Generate bubble plot
+    Plotly.newPlot("pie", data2, layout2);
   });
 }
 
