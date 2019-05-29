@@ -36,18 +36,38 @@ function buildCharts(sample) {
   //construct url for path to metadata for selected sample
   var url = `/samples/${sample}`;
 
-  // Fetch metadata for the sample
+  // Fetch sample information.
+  // Sample returned in the format:
+  /**
+  sampleData = { 
+    "otu_ids": sample_data.otu_id.values.tolist(),
+    "sample_values": sample_data[sample].values.tolist(),
+    "otu_labels": sample_data.otu_label.tolist(),
+  }
+  */
+
   d3.json(url).then(function(sampleData){  
     console.log(sampleData); 
 
+    // GRETEL - MOVE THIS CODE
     // Clear existing chart
     d3.select("#bubble").node().value = "";
   
     // Grab values from response json object to build plot
-    var out_ids = sampleData.Data.otu_ids;
-    var sample_values = sampleData.sample_values;
-    var otu_labels = sampleData.sample_values;
 
+
+
+    var sampleArray = sampleData.map( (s, i) => 
+      ({otu_id: s.otu_ids[i],
+        sample_value: s.sample_values[i], 
+        otu_label: s.otu_labels[i]}) 
+      );
+
+    // Need to get the top 10 bacteria
+  
+    sampleArray.sort(function(a, b){
+      return b.sample_value-a.sample_value;
+    })
     // Build plot variables
     var trace1 = {
       x: otu_ids,
@@ -55,7 +75,7 @@ function buildCharts(sample) {
       text: otu_labels,
       mode: 'markers',
       marker: {
-        color: out_ids, //Gretel figure out exactly what to do with this
+        color: otu_ids, //Gretel figure out exactly what to do with this
         size: sample_values
       }
     };
@@ -69,7 +89,7 @@ function buildCharts(sample) {
       width: 600
     };
     
-    // Generate Plot
+    // Generate bubble plot
     Plotly.newPlot("bubble", data, layout);
 
     // @TODO: Build a Pie Chart
