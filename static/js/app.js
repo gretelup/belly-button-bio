@@ -5,7 +5,7 @@ function buildMetadata(sample) {
   /* @param {string}    sample    Name of the sample
   */
 
-  //construct url for path to metadata for selected sample
+  // Construct url for path to metadata for selected sample
   var url = `/metadata/${sample}`;
 
   // Fetch metadata for the sample
@@ -15,11 +15,11 @@ function buildMetadata(sample) {
     // Clear existing metadata
     d3.select("#sample-metadata").html("");
 
-    // GRETEL - CHECK SYNTAX - we aren't adding data, so we don't need enter, right?
     // Add a line for each metadata pair
     Object.entries(sampleData).forEach(([key, value]) => {
-      d3.select("#sample-buildMetadata")
+      d3.select("#sample-metadata")
         .append("p")
+        .text("test")
         .classed("card-text", true)
         .text(`${key}: ${value}`);
     });
@@ -33,68 +33,61 @@ function buildCharts(sample) {
   /* @param {string}    sample    Name of the sample
   */
 
-  //construct url for path to metadata for selected sample
+  // Construct url for path to metadata for selected sample
   var url = `/samples/${sample}`;
 
-  // Fetch sample information.
-  // Sample returned in the format:
-  /**
-  sampleData = { 
-    "otu_ids": sample_data.otu_id.values.tolist(),
-    "sample_values": sample_data[sample].values.tolist(),
-    "otu_labels": sample_data.otu_label.tolist(),
-  }
-  */
-
+  // Fetch sample information
   d3.json(url).then(function(sampleData){  
-    console.log(sampleData); 
+    
+    console.log(sampleData);
 
-    // GRETEL - MOVE THIS CODE
-    // Clear existing chart
-    d3.select("#bubble").node().value = "";
-  
-    // Grab values from response json object to build plot
+    // Unpack json to lists
+    var otu_ids = sampleData.otu_ids; 
+    var sample_values = sampleData.sample_values;
+    var otu_labels = sampleData.otu_labels;
 
+    // Create a list of objects for each otu_id
+    otuData = [];
+    otuData = otu_ids.map((d, i) => {
+      return {otu_id: d, sample_value: sample_values[i], otu_label: otu_labels[i]}
+    });
 
+    // Sort data by sample_values and select top 10 values
+    otuData.sort((a, b) => b.sample_value-a.sample_value);
+    otuData = otuData.slice(0,10);
 
-    var sampleArray = sampleData.map( (s, i) => 
-      ({otu_id: s.otu_ids[i],
-        sample_value: s.sample_values[i], 
-        otu_label: s.otu_labels[i]}) 
-      );
-
-    // Need to get the top 10 bacteria
-  
-    sampleArray.sort(function(a, b){
-      return b.sample_value-a.sample_value;
-    })
     // Build plot variables
     var trace1 = {
-      x: otu_ids,
-      y: sample_values,
-      text: otu_labels,
+      x: otuData.map(d => d.otu_id),
+      y: otuData.map(d => d.sample_value),
+      text: otuData.map(d => d.otu_label),
       mode: 'markers',
       marker: {
-        color: otu_ids, //Gretel figure out exactly what to do with this
-        size: sample_values
+        color: otuData.map(d => d.otu_id), //Gretel figure out exactly what to do with this
+        size: otuData.map(d => d.sample_value)
       }
     };
     
     var data = [trace1];
     
     var layout = {
-      title: "OTU ID",
+      xaxis: {
+        title: {
+          text: "OTU ID"
+        }
+      },
       showlegend: false,
       height: 600,
-      width: 600
+      width: 1200
     };
+
+    // Clear existing chart
+    d3.select("#bubble").node().value = "";
     
     // Generate bubble plot
     Plotly.newPlot("bubble", data, layout);
 
-    // @TODO: Build a Pie Chart
-    // HINT: You will need to use slice() to grab the top 10 sample_values,
-    // otu_ids, and labels (10 each).
+    // // @TODO: Build a Pie Chart
   });
 }
 
