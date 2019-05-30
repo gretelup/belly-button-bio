@@ -1,7 +1,7 @@
 function buildMetadata(sample) {
 
   /**
-  /* Builds card to display metadata given the name of a sample.
+  /* Builds card to display metadata of given sample.
   /* @param {string}    sample    Name of the sample
   */
 
@@ -9,8 +9,7 @@ function buildMetadata(sample) {
   var url = `/metadata/${sample}`;
 
   // Fetch metadata for the sample
-  d3.json(url).then(function(sampleData){  
-    console.log(sampleData); 
+  d3.json(url).then(function(sampleData){
 
     // Clear existing metadata
     d3.select("#sample-metadata").html("");
@@ -33,13 +32,11 @@ function buildCharts(sample) {
   /* @param {string}    sample    Name of the sample
   */
 
-  // Construct url for path to metadata for selected sample
+  // Construct url for path to data for selected sample
   var url = `/samples/${sample}`;
 
   // Fetch sample information
   d3.json(url).then(function(sampleData){  
-    
-    console.log(sampleData);
 
     // Unpack json to lists
     var otu_ids = sampleData.otu_ids; 
@@ -52,11 +49,9 @@ function buildCharts(sample) {
       return {otu_id: d, sample_value: sample_values[i], otu_label: otu_labels[i]}
     });
 
-    // Sort data by sample_values and select top 10 values
+    // Sort data by sample_values and slice top 10 values
     otuData.sort((a, b) => b.sample_value-a.sample_value);
     otuData = otuData.slice(0,10);
-
-    console.log(otuData);
 
     // BUILD BUBBLE PLOT
     // Build bubble plot variables
@@ -81,10 +76,6 @@ function buildCharts(sample) {
       height: 600,
       width: 1200
     };
-
-    // Clear existing chart
-    d3.select("#bubble").node().value="";
-    
     // Generate bubble plot
     Plotly.newPlot("bubble", data1, layout1);
 
@@ -101,9 +92,6 @@ function buildCharts(sample) {
       height: 450,
       width: 450
     };
-    // Clear existing chart
-    d3.select("#pie").node().value = "";
-    
     // Generate bubble plot
     Plotly.newPlot("pie", data2, layout2);
   });
