@@ -66,7 +66,7 @@ function buildCharts(sample) {
       text: otuData.map(d => d.otu_label),
       mode: 'markers',
       marker: {
-        color: otuData.map(d => d.otu_id), //Gretel figure out exactly what to do with this
+        color: otuData.map(d => d.otu_id),
         size: otuData.map(d => d.sample_value)
       }
     };
@@ -83,7 +83,7 @@ function buildCharts(sample) {
     };
 
     // Clear existing chart
-    d3.select("#bubble").node().value = "";
+    d3.select("#bubble").node().value="";
     
     // Generate bubble plot
     Plotly.newPlot("bubble", data1, layout1);
@@ -126,6 +126,7 @@ function init() {
     const firstSample = sampleNames[0];
     buildCharts(firstSample);
     buildMetadata(firstSample);
+    bonus(firstSample);
   });
 }
 
@@ -133,6 +134,7 @@ function optionChanged(newSample) {
   // Fetch new data each time a new sample is selected
   buildCharts(newSample);
   buildMetadata(newSample);
+  bonus(newSample);
 }
 
 // Initialize the dashboard
